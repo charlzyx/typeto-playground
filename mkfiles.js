@@ -19,8 +19,8 @@ function generateFileTree(dirPath, result = {}) {
       generateFileTree(itemPath, result);
     } else if (item.isFile()) {
       const contents = fs.readFileSync(itemPath, "utf-8");
-      result[itemPath.replace("srv", "")] = {
-        filePath: itemPath.replace("srv", ""),
+      result[itemPath.replace("vhost", "")] = {
+        filePath: itemPath.replace("vhos", ""),
         loading: false,
         value: contents,
       };
@@ -31,7 +31,7 @@ function generateFileTree(dirPath, result = {}) {
 }
 
 // 示例使用
-const targetDirectory = "./srv"; // 替换为你的目标目录路径
+const targetDirectory = "./vhost"; // 替换为你的目标目录路径
 const fileTree = generateFileTree(targetDirectory);
 console.log("🚀 ~ fileTree:", fileTree);
 

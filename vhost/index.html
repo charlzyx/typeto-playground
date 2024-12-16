@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+    <div>
+      <div>Ouput of <span id="filename"></span></div>
+      <div id="code"></div>
+    </div>
+
+    <script type="module">
+      // 指定确切的版本号
+      import { codeToHtml } from "https://esm.sh/shiki@1.24.0";
+      const latest = {
+        current: null,
+      };
+      const code = document.getElementById("code");
+      setInterval(async () => {
+        const current = await fetch("/current").then((resp) => resp.json());
+        const filename = document.getElementById("filename");
+        filename.innerHTML = current.content;
+        if (current.content !== latest.current) {
+          if (/output/.test(current.content)) return;
+          query();
+          latest.current = current.content;
+          code.innerHTML = "transforming...";
+        }
+      }, 1000);
+
+      const query = async () => {
+        const source = await fetch("/output").then((resp) => resp.json());
+
+        code.innerHTML = await codeToHtml(source.content, {
+          lang: "js",
+          theme: "min-light",
+        });
+      };
+    </script>
+  </body>
+</html>

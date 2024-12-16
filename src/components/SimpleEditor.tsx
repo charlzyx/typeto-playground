@@ -3,11 +3,19 @@ import type {
   EditorUpdate,
   ScrollPosition,
 } from "@tutorialkit/components-react/core";
+import dayjs from "dayjs";
 import CodeMirrorEditor from "@tutorialkit/components-react/core/CodeMirrorEditor";
 import FileTree from "@tutorialkit/components-react/core/FileTree";
 import type { FileSystemTree, DirectoryNode } from "@webcontainer/api";
 import type { Terminal as XTerm } from "@xterm/xterm";
-import { Suspense, lazy, useEffect, useState } from "react";
+import {
+  Suspense,
+  lazy,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useWebContainer } from "../hooks/useWebContainer.js";
 import { FILES } from "../files.js";
 
@@ -35,7 +43,14 @@ export function SimpleEditor() {
 
   return (
     <div className="max-w-screen-lg mx-auto">
-      <div className="mx-4 my-4 h-[calc(100vh-2rem)] flex flex-col border border-gray-200 border-solid rounded-xl overflow-hidden">
+      <div className="flex ">
+        <h1 className="text-lg mx-4 my-4 underline">
+          <a href="https://github.com/charlzyx/typeto">
+            github.com/charlzyx/typeto
+          </a>
+        </h1>
+      </div>
+      <div className="mx-4 my-4 h-[calc(100vh-2rem)] flex flex-col border border-gray-200 border-solid rounded-sm overflow-hidden">
         <div className="flex h-1/2">
           <FileTree
             className="w-1/4 flex-shrink-0 text-sm mt-2"
@@ -55,7 +70,7 @@ export function SimpleEditor() {
         </div>
         <div className="h-px bg-gray-200" />
         <div className="flex p-0 m-0 h-1/2">
-          <div className="w-1/2 h-full">
+          <div className="w-1/4 h-full">
             {domLoaded && (
               <Suspense>
                 <Terminal
@@ -68,8 +83,12 @@ export function SimpleEditor() {
             )}
           </div>
           <div className="w-px flex-shrink-0 h-full bg-gray-200" />
-          <div className="w-1/2 h-full">
-            <iframe className="border-none w-full h-full" src={previewSrc} />
+          <div className="h-full flex-grow max-w-[calc(75%-1px)] text-[13px]">
+            <iframe
+              id="vhost"
+              className="border-none w-full h-full"
+              src={previewSrc}
+            />
           </div>
         </div>
       </div>
@@ -80,12 +99,22 @@ export function SimpleEditor() {
 function useSimpleEditor() {
   const webcontainerPromise = useWebContainer();
   const [terminal, setTerminal] = useState<XTerm | null>(null);
-  const [selectedFile, setSelectedFile] = useState("/src/index.js");
+  const [selectedFile, osetSelectedFile] = useState("/oas.ts");
   const [documents, setDocuments] =
     useState<Record<string, EditorDocument>>(FILES);
   const [previewSrc, setPreviewSrc] = useState<string>("");
 
   const document = documents[selectedFile];
+
+  const setSelectedFile = useCallback(async (filePath: string) => {
+    osetSelectedFile(filePath);
+    const webcontainer = await webcontainerPromise;
+
+    webcontainer.fs.writeFile(
+      "current",
+      filePath + ":" + dayjs().format("YYYY/MM/DD HH:mm:ss.sss")
+    );
+  }, []);
 
   async function onChange({ content }: EditorUpdate) {
     setDocuments((prevDocuments) => ({
@@ -96,9 +125,14 @@ function useSimpleEditor() {
       },
     }));
 
+    // fetch(selectedFile.replace(/\.*$/, ""));
     const webcontainer = await webcontainerPromise;
 
     await webcontainer.fs.writeFile(selectedFile, content);
+    webcontainer.fs.writeFile(
+      "current",
+      selectedFile + ":" + dayjs().format("YYYY/MM/DD HH:mm:ss.sss")
+    );
   }
 
   function onScroll(scroll: ScrollPosition) {
@@ -191,7 +225,14 @@ function useSimpleEditor() {
   };
 }
 
-const FILE_PATHS = Object.keys(FILES);
+const FILE_PATHS = Object.keys(FILES)
+  .filter((name) => {
+    return /oas|formily|zod|output/.test(name);
+  })
+  .sort((a, b) => {
+    if (/output/.test(a)) return -1;
+    return 0;
+  });
 
 function stripIndent(string: string) {
   const indent = minIndent(string.slice(1));

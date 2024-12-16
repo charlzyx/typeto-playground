@@ -13,7 +13,6 @@
     "@typeto/oas": "latest",
     "@typeto/zod": "latest",
     "hono": "^4.6.14",
-    "servor": "4.0.2",
     "ts-morph": "latest",
     "typescript": "latest"
   }
