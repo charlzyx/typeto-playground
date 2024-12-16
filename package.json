@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite dev",
     "start": "vite dev",
-    "build": "vite build"
+    "build": "vite build && mv _headers dist/"
   },
   "dependencies": {
     "@tutorialkit/components-react": "0.0.1-alpha.25",
