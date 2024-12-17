@@ -35,8 +35,9 @@ app.get("/current", (c) => {
 });
 app.get("/output", (c) => {
   const current = fs.readFileSync("./current").toString();
-  if (!/\.ts$/.test(current)) return;
   const [filename] = current.split(":");
+  if (!/\.ts$/.test(filename)) return;
+  console.log("transforming :", current);
   const [type] = filename.replace("/", "").split(".");
   const input = fs.readFileSync("./" + filename).toString();
 

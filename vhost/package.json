@@ -1,7 +1,7 @@
 {
-  "name": "hello-world",
+  "name": "typeto-playground",
   "version": "1.0.0",
-  "description": "Hello, world!",
+  "description": "Say hi!",
   "main": "index.js",
   "type": "module",
   "scripts": {
