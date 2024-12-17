@@ -8,10 +8,10 @@ const path = require("path");
  */
 function generateFileTree(dirPath, result = {}) {
   const items = fs.readdirSync(dirPath, { withFileTypes: true });
+  if (/node_modules/.test(dirPath)) return;
 
   for (const item of items) {
     const itemPath = path.join(dirPath, item.name);
-    console.log("🚀 ~ generateFileTree ~ itemPath:", itemPath);
     if (item.isDirectory()) {
       // result[item.name] = {
       //   directory:

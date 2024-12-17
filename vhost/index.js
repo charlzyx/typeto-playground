@@ -35,7 +35,7 @@ app.get("/current", (c) => {
 });
 app.get("/output", (c) => {
   const current = fs.readFileSync("./current").toString();
-  if (/output/.test(current)) return;
+  if (/output|index\.js|pacakge\.json/.test(current)) return;
   const [filename] = current.split(":");
   const [type] = filename.replace("/", "").split(".");
   const input = fs.readFileSync("./" + filename).toString();

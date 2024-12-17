@@ -227,24 +227,12 @@ function useSimpleEditor() {
 
 const FILE_PATHS = Object.keys(FILES)
   .filter((name) => {
-    return /oas|formily|zod|output/.test(name);
+    return /oas|formily|zod|index.js|package.json/.test(name);
   })
   .sort((a, b) => {
-    if (/output/.test(a)) return -1;
+    if (/package.json/.test(a)) return -1;
     return 0;
   });
-
-function stripIndent(string: string) {
-  const indent = minIndent(string.slice(1));
-
-  if (indent === 0) {
-    return string;
-  }
-
-  const regex = new RegExp(`^[ \\t]{${indent}}`, "gm");
-
-  return string.replace(regex, "").trim();
-}
 
 function minIndent(string: string) {
   const match = string.match(/^[ \t]*(?=\S)/gm);

@@ -9,11 +9,11 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
-    "@typeto/formily-schema": "latest",
-    "@typeto/oas": "latest",
-    "@typeto/zod": "latest",
+    "@typeto/formily-schema": "^1.1.2",
+    "@typeto/oas": "^1.1.2",
+    "@typeto/zod": "^1.1.2",
     "hono": "^4.6.14",
-    "ts-morph": "latest",
-    "typescript": "latest"
+    "ts-morph": "^24.0.0",
+    "typescript": "^5.7.2"
   }
 }
