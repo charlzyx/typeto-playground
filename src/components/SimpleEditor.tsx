@@ -46,7 +46,7 @@ export function SimpleEditor() {
       <div className="flex h-3rem">
         <h1 className="px-4 py-2 text-[20px] underline link">
           <a href="https://github.com/charlzyx/typeto">
-            https://github.com/charlzyx/typeto
+            https://github.com/charlzyx/typeto@^1.1.3
           </a>
         </h1>
       </div>
@@ -235,7 +235,7 @@ const FILE_PATHS = Object.keys(FILES)
     return /oas|formily|zod|index.js|package.json/.test(name);
   })
   .sort((a, b) => {
-    if (/package.json/.test(a)) return -1;
+    if (/\.ts$/.test(a)) return -1;
     return 0;
   });
 
