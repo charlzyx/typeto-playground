@@ -6,7 +6,7 @@ import type {
 import dayjs from "dayjs";
 import CodeMirrorEditor from "@tutorialkit/components-react/core/CodeMirrorEditor";
 import FileTree from "@tutorialkit/components-react/core/FileTree";
-import type { FileSystemTree, DirectoryNode } from "@webcontainer/api";
+import { type FileSystemTree, type DirectoryNode } from "@webcontainer/api";
 import type { Terminal as XTerm } from "@xterm/xterm";
 import {
   Suspense,
@@ -42,53 +42,54 @@ export function SimpleEditor() {
   }, []);
 
   return (
-    <div className="max-w-screen-lg mx-auto">
-      <div className="flex ">
-        <h1 className="text-lg mx-4 my-4 underline">
+    <div className="px-auto">
+      <div className="flex h-3rem">
+        <h1 className="px-4 py-2 text-[20px] underline link">
           <a href="https://github.com/charlzyx/typeto">
-            github.com/charlzyx/typeto
+            https://github.com/charlzyx/typeto
           </a>
         </h1>
       </div>
-      <div className="mx-4 my-4 h-[calc(100vh-2rem)] flex flex-col border border-gray-200 border-solid rounded-sm overflow-hidden">
-        <div className="flex h-1/2">
+      <div className="px-2 py-2 h-[calc(100vh-3rem)] flex border border-gray-200 border-solid rounded-sm overflow-hidden">
+        <div className="w-1/5  filetree h-full">
           <FileTree
-            className="w-1/4 flex-shrink-0 text-sm mt-2"
             files={files}
             hideRoot
             selectedFile={selectedFile}
             onFileSelect={setSelectedFile}
           />
-          <div className="w-px flex-shrink-0 h-full bg-gray-200" />
-          <CodeMirrorEditor
-            theme="light"
-            doc={document}
-            onChange={onChange}
-            onScroll={onScroll}
-            className="h-full flex-grow max-w-[calc(75%-1px)] text-[13px]"
-          />
         </div>
-        <div className="h-px bg-gray-200" />
-        <div className="flex p-0 m-0 h-1/2">
-          <div className="w-1/4 h-full">
+        <div className="panel flex flex-col w-full ">
+          <div className="codebox w-full flex h-4/5">
+            <div className="editor w-1/2 px-auto overflow-auto">
+              <CodeMirrorEditor
+                theme="light"
+                doc={document}
+                onChange={onChange}
+                onScroll={onScroll}
+              />
+            </div>
+            <div className="h-full w-px bg-gray-200" />
+            <div className="w-1/2 text-[13px]">
+              <iframe
+                id="vhost"
+                className="border-none w-full h-full overflow-auto"
+                src={previewSrc}
+              />
+            </div>
+          </div>
+          {/* <div className="w-full h-px bg-gray-200" /> */}
+          <div className="terminal h-1/5 px-2 py-2 w-full">
             {domLoaded && (
               <Suspense>
                 <Terminal
-                  className="h-full"
+                  className="h-full "
                   readonly={false}
                   theme="light"
                   onTerminalReady={setTerminal}
                 />
               </Suspense>
             )}
-          </div>
-          <div className="w-px flex-shrink-0 h-full bg-gray-200" />
-          <div className="h-full flex-grow max-w-[calc(75%-1px)] text-[13px]">
-            <iframe
-              id="vhost"
-              className="border-none w-full h-full"
-              src={previewSrc}
-            />
           </div>
         </div>
       </div>
@@ -107,13 +108,17 @@ function useSimpleEditor() {
   const document = documents[selectedFile];
 
   const setSelectedFile = useCallback(async (filePath: string) => {
-    osetSelectedFile(filePath);
-    const webcontainer = await webcontainerPromise;
-
-    webcontainer.fs.writeFile(
-      "current",
-      filePath + ":" + dayjs().format("YYYY/MM/DD HH:mm:ss.sss")
-    );
+    osetSelectedFile((pre) => {
+      if (pre !== filePath) {
+        webcontainerPromise.then((webcontainer) => {
+          webcontainer.fs.writeFile(
+            "current",
+            filePath + ":" + dayjs().format("YYYY/MM/DD HH:mm:ss.sss")
+          );
+        });
+      }
+      return filePath;
+    });
   }, []);
 
   async function onChange({ content }: EditorUpdate) {
