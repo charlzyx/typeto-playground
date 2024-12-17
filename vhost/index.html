@@ -6,7 +6,9 @@
   </head>
   <body>
     <div>
-      <div>output of <span id="filename"></span></div>
+      <h4 style="text-decoration: underline">
+        output of <span id="filename"></span>
+      </h4>
       <div id="code"></div>
     </div>
 
@@ -22,7 +24,12 @@
         const filename = document.getElementById("filename");
         filename.innerHTML = current.content;
         if (current.content !== latest.current) {
-          if (/output/.test(current.content)) return;
+          const [filename] = current.content.split(":");
+          if (!/\.ts$/.test(filename)) {
+            latest.current = current.content;
+            code.innerHTML = "";
+            return;
+          }
           query();
           latest.current = current.content;
           code.innerHTML = "transforming...";
